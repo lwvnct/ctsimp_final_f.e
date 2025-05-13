@@ -112,7 +112,7 @@ const Register = ({ onToggle }) => {
     registrationData.append("valid_id", formData.validId)
 
     try {
-      const response = await fetch("http://tourism.test/api/register", {
+      const response = await fetch("http://ctsimp_backend.test/api/register", {
         method: "POST",
         body: registrationData,
       })

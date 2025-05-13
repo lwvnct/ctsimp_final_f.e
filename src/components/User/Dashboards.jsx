@@ -122,7 +122,7 @@ const Dashboard = () => {
     }
 
     try {
-      const response = await fetch("http://tourism.test/api/places", {
+      const response = await fetch("http://ctsimp_backend.test/api/places", {
         method: "POST",
         headers: {
           Accept: "application/json",

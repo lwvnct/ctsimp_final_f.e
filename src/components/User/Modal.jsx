@@ -12,7 +12,7 @@ const Modal = ({ onClose }) => {
   useEffect(() => {
     const fetchPlaces = async () => {
       try {
-        const response = await fetch("http://tourism.test/api/places")
+        const response = await fetch("http://ctsimp_backend.test/api/places")
         if (response.ok) {
           const data = await response.json()
           const filteredData = data.filter(item => item.name === name);
@@ -40,7 +40,7 @@ const Modal = ({ onClose }) => {
   };
 
   const handleEditSubmit = async (updatedPlace) => {
-    const url = `http://tourism.test/api/places/${updatedPlace.id}`;
+    const url = `http://ctsimp_backend.test/api/places/${updatedPlace.id}`;
     const name = sessionStorage.getItem("name");
 
     if (!name) {
@@ -86,9 +86,6 @@ const Modal = ({ onClose }) => {
     }
 };
   
-  
-  
-
   // Animation variants
   const backdropVariants = {
     hidden: { opacity: 0 },
@@ -268,6 +265,7 @@ const EditModal = ({ place, onClose, onSubmit }) => {
   });
 
   const [activityInput, setActivityInput] = useState("");
+  const [showWarning, setShowWarning] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -283,7 +281,7 @@ const EditModal = ({ place, onClose, onSubmit }) => {
         ...prevData,
         activities: [...prevData.activities, activityInput.trim()],
       }));
-      setActivityInput("");
+      setActivityInput("");       
     }
   };
 
@@ -294,10 +292,16 @@ const EditModal = ({ place, onClose, onSubmit }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSaveClick = (e) => {
     e.preventDefault();
+    setShowWarning(true);
+  };
+
+  const handleContinue = () => {
+    setShowWarning(false);
     const updatedFormData = {
       ...formData,
+      status: "Pending", // Set status to Pending
       activities: formData.activities.join(","),
     };
     onSubmit(updatedFormData);
@@ -317,7 +321,7 @@ const EditModal = ({ place, onClose, onSubmit }) => {
         exit={{ scale: 0.8 }}
       >
         <h2 className="text-xl font-semibold mb-4">Edit Destination</h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSaveClick}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="place_name" className="block text-sm font-medium text-gray-700">
@@ -501,6 +505,35 @@ const EditModal = ({ place, onClose, onSubmit }) => {
             </button>
           </div>
         </form>
+
+        {showWarning && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+              <p className="text-center text-yellow-700 font-medium">
+                Are you sure you want to save changes? The status will be set to "Pending".
+              </p>
+              <div className="flex justify-center mt-4">
+                <button
+                  onClick={() => setShowWarning(false)}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md mr-2"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleContinue}
+                  className="px-4 py-2 bg-emerald-600 text-white rounded-md"
+                >
+                  Continue
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
       </motion.div>
     </motion.div>
   );

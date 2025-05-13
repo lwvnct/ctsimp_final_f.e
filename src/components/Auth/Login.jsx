@@ -91,7 +91,7 @@ const Login = ({ onToggle }) => {
     }
 
     try {
-      const response = await fetch("http://tourism.test/api/login", {
+      const response = await fetch("http://ctsimp_backend.test/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
