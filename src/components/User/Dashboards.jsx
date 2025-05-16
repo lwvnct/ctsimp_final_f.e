@@ -35,7 +35,6 @@ const Dashboard = () => {
 
   const fileInputRef = useRef(null)
 
-
   useEffect(() => {
     const storedName = sessionStorage.getItem("name")
     if (storedName) {
@@ -43,6 +42,11 @@ const Dashboard = () => {
         ...prevData,
         name: storedName,
       }))
+    }
+
+    const savedData = localStorage.getItem("formData");
+    if (savedData) {
+      setFormData(JSON.parse(savedData)); // Load saved data into formData state
     }
   }, [])
 
@@ -68,12 +72,13 @@ const Dashboard = () => {
   }
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }))
-  }
+    const { name, value } = e.target;
+    setFormData((prevData) => {
+      const updatedData = { ...prevData, [name]: value };
+      localStorage.setItem("formData", JSON.stringify(updatedData)); // Save to localStorage
+      return updatedData;
+    });
+  };
 
   const showNotification = (text, color) => {
     setSnackbar({
@@ -107,10 +112,10 @@ const Dashboard = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
 
-    const formDataToSubmit = new FormData()
+    const formDataToSubmit = new FormData();
 
     // Append form data
     for (const key in formData) {
@@ -128,28 +133,31 @@ const Dashboard = () => {
           Accept: "application/json",
         },
         body: formDataToSubmit,
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
       if (response.ok) {
-        console.log("Place created:", data.place)
-        showNotification("Place created successfully", "success")
+        console.log("Place created:", data.place);
+        showNotification("Place created successfully", "success");
+
+        // Clear localStorage after successful submission
+        localStorage.removeItem("formData");
 
         // Delay the page refresh to allow time to see the notification
         setTimeout(() => {
-          window.location.reload()
-        }, 3000) // 3 second delay
+          window.location.reload();
+        }, 3000); // 3 second delay
       } else {
-        console.error("Error:", data.message)
-        showNotification(data.message || "Error creating place", "error")
+        console.error("Error:", data.message);
+        showNotification(data.message || "Error creating place", "error");
       }
     } catch (error) {
-      console.error("Error:", error)
-      showNotification("Error submitting form. Please try again.", "error")
+      console.error("Error:", error);
+      showNotification("Error submitting form. Please try again.", "error");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   // Animation variants
   const containerVariants = {
