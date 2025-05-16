@@ -23,6 +23,10 @@ export default function Carousel() {
   const [searchQuery, setSearchQuery] = useState("")
   const [showFilters, setShowFilters] = useState(false)
 
+  // Directions states
+  const [showDirections, setShowDirections] = useState(false);
+  const [directionsUrl, setDirectionsUrl] = useState("");
+
   // Caraga region data structure
   const caragaRegion = {
     "Agusan del Norte": [
@@ -199,6 +203,33 @@ export default function Carousel() {
     setSelectedProvince("Agusan del Norte")
     setSelectedMunicipality(caragaRegion["Agusan del Norte"][0])
   }
+
+  const handleGetDirections = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+
+          // Extract destination coordinates from the map_iframe URL
+          const destinationUrl = new URL(currentImage?.map_iframe);
+          const destinationCoords = "8.865259191189661,125.43346937465635"; // Replace with actual coordinates if needed
+
+          if (destinationCoords) {
+            const directionsUrl = `https://www.google.com/maps/dir/${latitude},${longitude}/${destinationCoords}`;
+            window.open(directionsUrl, "_blank");
+          } else {
+            alert("Destination coordinates are not available.");
+          }
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          alert("Unable to retrieve your location. Please enable location services.");
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by your browser.");
+    }
+  };
 
   useEffect(() => {
     fetch("http://ctsimp_backend.test/api/approvedplaces")
@@ -658,7 +689,7 @@ export default function Carousel() {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             >
-                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                             </svg>
                             Contact Information
                           </h3>
@@ -693,7 +724,7 @@ export default function Carousel() {
                               strokeLinecap="round"
                               strokeLinejoin="round"
                             >
-                              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                             </svg>
                             <div>
                               <p className="text-sm font-medium text-gray-700">Phone</p>
@@ -731,6 +762,12 @@ export default function Carousel() {
                             allowFullScreen
                             ></iframe>
                           </div>
+                          <button
+                            onClick={handleGetDirections}
+                            className="mt-4 px-4 py-2 bg-emerald-600 text-white rounded-md shadow hover:bg-emerald-700 transition"
+                          >
+                            Get Directions
+                          </button>
                           </div>
                         )}
 
